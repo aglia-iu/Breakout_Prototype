@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        rigidBody = GetComponent<Rigidbody>(); // The rigibody of the character to add force to the character.
+        rigidBody = GetComponent<Rigidbody>(); // The rigidbody of the character to add force to the character.
         playerStart = this.transform.position; // The starting position of the player.
 
         
@@ -26,13 +26,19 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       
+        Debug.Log(movementPlayer());
+
+    }
+
+    public string movementPlayer()
+    {
         movementX = Input.GetAxis("Horizontal");
-        Vector3 movementAlongX = new Vector3 (movementX, 0, 0);
+        Vector3 movementAlongX = new Vector3(movementX, 0, 0);
 
         // Add the provided force to the rigidBody
         Debug.Log(movementX);
-        rigidBody.AddForce (movementAlongX);
+        rigidBody.AddForce(movementAlongX);
 
+        return ("Character Position is: "  + this.transform.position.ToString());
     }
 }

@@ -22,7 +22,6 @@ public class BallMovement : MonoBehaviour
     void Update()
     {
         Vector3 forceToAdd = new Vector3(0.0f, 0.0f, -1.0f);
-
         rigidBody.AddForce (forceToAdd);
     }
 }
