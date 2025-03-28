@@ -8,7 +8,7 @@ public class Shield : MonoBehaviour
     void Update()
     {
         Vector3 mouseMovement = Input.mousePosition; // Collect the position of the mouse to control the shield.
-        this.transform.rotation = Quaternion.Euler(0.0f, mouseMovement.y, 0.0f);
+        this.transform.rotation = Quaternion.Euler(0.0f, mouseMovement.y/2, 0.0f);
 
     }
 }

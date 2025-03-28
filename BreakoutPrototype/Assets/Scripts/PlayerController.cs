@@ -28,30 +28,21 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         MovementPlayer();
-        LockPlayerOnAxis();
 
     }
 
     public void MovementPlayer()
     {
         movementX = Input.GetAxis("Horizontal");
-        Vector3 movementAlongX = new Vector3(movementX * speed, 0, 0);
+        Debug.Log("input by user" +  movementX);
+        Vector3 movementAlongX = new Vector3((movementX * speed)/2, 0, 0);
 
         // Add the provided force to the rigidBody
-        rigidBody.AddForce(movementAlongX);
+        this.transform.position += movementAlongX;
+        Debug.Log("Final Movement" + movementAlongX);
+
 
     }
 
-    public string LockPlayerOnAxis()
-    {
-        // Set the x and z component of the object to 0.0f.
-        //this.rigidBody.;
-        this.rigidBody.constraints = 
-            RigidbodyConstraints.FreezePositionY |
-            RigidbodyConstraints.FreezePositionZ | 
-            RigidbodyConstraints.FreezeRotation;
 
-        
-        return "position and rotation set";
-    }
 }
