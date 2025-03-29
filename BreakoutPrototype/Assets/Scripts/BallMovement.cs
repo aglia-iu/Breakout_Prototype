@@ -16,6 +16,7 @@ public class BallMovement : MonoBehaviour
     private bool shieldHit = false;
     private bool wallHit = false;
     private bool groundHit = false;
+    private Vector3 shieldTransform = new Vector3();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -60,7 +61,7 @@ public class BallMovement : MonoBehaviour
 
     private void BouncePhysics(float time)
     {
-        Vector3 force = new Vector3(0, 0, ActivateForce());
+        Vector3 force = new Vector3(0, 0, ActivateForce()) ;
         Vector3 linearDampingFactor = new Vector3(0, (LinearInterpolate(0.0f, time) * linearDamping), 0);
         //Debug.Log(force);
         
@@ -75,6 +76,7 @@ public class BallMovement : MonoBehaviour
         {
             if (this.transform.position.y <= time)
             {
+                //this.transform.forward = shieldTransform;
                 this.transform.position += (linearDampingFactor) * 0.5f;
                 this.transform.position += force;
             }
@@ -90,8 +92,8 @@ public class BallMovement : MonoBehaviour
         if (shieldHit)
         {
             Debug.Log("Shield" + shield.transform.rotation);
-            //this.transform.rotation = Quaternion.Normalize(shield.transform.rotation);
-            Debug.Log("Ball" + this.transform.rotation);
+            shieldTransform = shield.transform.forward * -1.0f;
+            this.transform.forward = shieldTransform;
             return speed;
         }
         else if (wallHit)
