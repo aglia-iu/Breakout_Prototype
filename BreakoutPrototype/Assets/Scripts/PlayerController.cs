@@ -34,12 +34,12 @@ public class PlayerController : MonoBehaviour
     public void MovementPlayer()
     {
         movementX = Input.GetAxis("Horizontal");
-        Debug.Log("input by user" +  movementX);
+        //Debug.Log("input by user" +  movementX);
         Vector3 movementAlongX = new Vector3((movementX * speed)/2, 0, 0);
 
         // Add the provided force to the rigidBody
         this.transform.position += movementAlongX;
-        Debug.Log("Final Movement" + movementAlongX);
+        //Debug.Log("Final Movement" + movementAlongX);
 
 
     }

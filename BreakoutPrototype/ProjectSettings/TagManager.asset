@@ -7,6 +7,8 @@ TagManager:
   - shield
   - yellowWall
   - redWall
+  - ground
+  - wall
   layers:
   - Default
   - TransparentFX
