@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     private Quaternion playerStartRot; // The start position of the player
     private float movementX; // The movement of the character along the X axis.
     private Rigidbody rigidBody; // The movement of the character along the X axis.
+    private int score = 0;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -42,6 +43,16 @@ public class PlayerController : MonoBehaviour
         //Debug.Log("Final Movement" + movementAlongX);
 
 
+    }
+
+    public int GetScore() 
+    { 
+        return score;
+    }
+
+    public void SetScore(int increment)
+    {
+        score += increment;
     }
 
 

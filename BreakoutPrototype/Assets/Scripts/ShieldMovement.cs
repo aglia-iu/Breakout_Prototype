@@ -8,7 +8,10 @@ public class Shield : MonoBehaviour
     void Update()
     {
         Vector3 mouseMovement = Input.mousePosition; // Collect the position of the mouse to control the shield.
-        this.transform.rotation = Quaternion.Euler(0.0f, mouseMovement.y/2, 0.0f);
+        this.transform.rotation = Quaternion.Euler(0.0f, mouseMovement.y/4, 0.0f);
+        // We also don't want the rotation going over 90 or under 90.
+        //TODO: Add Lerp Function between -90 to 90.
+        
 
     }
 }
