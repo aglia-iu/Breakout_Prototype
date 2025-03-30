@@ -44,14 +44,14 @@ public class BallMovement : MonoBehaviour
 
         shieldTransform = shield.transform;
         shieldHit = false;
-        wallHit = true;
+        wallHit = false;
         RandomizeColor();
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        //Debug.Log("Hit the ground: " + groundHit + ", Hit the shield: " + shieldHit + ", Hit the Wall: " + wallHit);
+        Debug.Log("Hit the ground: " + groundHit + ", Hit the shield: " + shieldHit + ", Hit the Wall: " + wallHit + ", Hit the Boundary: " + boundaryHit);
         BouncePhysics(7.0f);
     }
 
@@ -61,6 +61,7 @@ public class BallMovement : MonoBehaviour
         {
             shieldTransform = other.transform;
             shieldTransformNormalized = shieldTransform.forward.normalized;
+            this.transform.rotation = shieldTransform.rotation;
             //Debug.Log("Shield: " + shieldTransformNormalized);
             shieldHit = true;
             wallHit = false;
@@ -69,6 +70,8 @@ public class BallMovement : MonoBehaviour
 
         if (other.gameObject.tag == "wall" )
         {
+            
+            
             wallTransform = other.transform;
             Color wallColor = other.gameObject.GetComponent<MeshRenderer>().material.color;
             Color ballColor = this.gameObject.GetComponent<MeshRenderer>().material.color;
@@ -81,7 +84,9 @@ public class BallMovement : MonoBehaviour
             {
                 player.SetScore(-1);
             }
-            Reflection(shieldTransformNormalized,other);
+
+            wallTransformNormalized = customPhysics.Reflection(shieldTransformNormalized,other);
+            this.transform.rotation = Quaternion.LookRotation(wallTransformNormalized, this.transform.up);
             RandomizeColor();
 
             shieldHit = false;
@@ -96,10 +101,15 @@ public class BallMovement : MonoBehaviour
         }
         if (other.gameObject.tag == "boundary")
         {
-            Reflection(wallTransformNormalized,other);
-            //shieldHit = false;
+            if (other.gameObject.name == "WallSouth")
+            {
+                Restart();
+            }
+            boundaryTransformNormalized = customPhysics.Reflection(wallTransformNormalized,other); //TODO
+            this.transform.rotation = Quaternion.LookRotation(boundaryTransformNormalized, this.transform.up);
+            shieldHit = false;
             //groundHit = false;
-            //wallHit = false;
+            wallHit = false;
             boundaryHit = true;
         }
 
@@ -107,25 +117,32 @@ public class BallMovement : MonoBehaviour
 
     private void BouncePhysics(float time)
     {
+        Quaternion orientation = Quaternion.identity;
         Vector3 force = new Vector3(0, 0, ActivateForce());
         Vector3 linearDampingFactor = new Vector3(0, (customPhysics.LinearInterpolation(0.0f, bounceFactor, time) * linearDamping), 0);
-        //Debug.Log(force);
 
         if (shieldHit && shieldTransform!=null)
         {
             force = ( shieldTransformNormalized * ActivateForce());
+            //this.transform.rotation = shieldTransform.rotation;
         }
         if (wallHit && wallTransform!=null)
         {
             force = (wallTransformNormalized * ActivateForce());
+            //this.transform.rotation = wallTransform.rotation;
         }
         if (boundaryHit)
         {
-            force = (wallTransformNormalized* -1.0f * ActivateForce());
+            force = (boundaryTransformNormalized * ActivateForce())
+                 //* -1.0f
+                ;
+            
+
         }
         // If the ball hasn't hit the ground yet, let it fall down from the ground
         if (!groundHit) 
         {
+            //this.transform.rotation = orientation;
             this.transform.position += (linearDampingFactor) * -0.5f ;
             this.transform.position += force;
         }
@@ -134,6 +151,7 @@ public class BallMovement : MonoBehaviour
         {
             if (this.transform.position.y <= time)
             {
+                //this.transform.rotation = orientation;
                 this.transform.position += (linearDampingFactor) * 0.5f;
                 this.transform.position += force;
             }
@@ -144,24 +162,32 @@ public class BallMovement : MonoBehaviour
         }
     }
 
-    private void Reflection(Vector3 transformNormalized, Collider other)
+    private Vector3 Reflection(Vector3 transformNormalized, Collider other)
     {
-        wallTransformNormalized = Vector3.Reflect(transformNormalized, other.transform.forward) * -1.0f;
+        return Vector3.Reflect(transformNormalized, other.transform.forward) 
+            //* -1.0f
+            ;
+        
     }
     private float ActivateForce()
     {
         if (shieldHit)
         {
-            shieldTransform = shield.transform;
+            //shieldTransform = shield.transform;
             return speed;
         }
         else if (wallHit)
         {
-            return -1.0f * speed;
-            //return speed;
+            //return -1.0f * speed;
+            return speed;
+        }
+        else if (boundaryHit)
+        {
+            //return -1.0f * speed;
+            return speed;
 
         }
-        return 0;
+        return -1.0f * speed;
     }
 
     
@@ -187,7 +213,7 @@ public class BallMovement : MonoBehaviour
         shieldTransform = shield.transform;
 
         shieldHit = false;
-        wallHit = true;
+        wallHit = false;
     }
 
     

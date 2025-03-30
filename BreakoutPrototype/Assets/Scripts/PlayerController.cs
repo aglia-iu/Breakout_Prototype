@@ -36,14 +36,19 @@ public class PlayerController : MonoBehaviour
         movementX = Input.GetAxis("Horizontal");
         Vector3 movementAlongX = new Vector3((movementX * speed)/2, 0, 0);
 
-        if(this.transform.position.x <= 7.0f || this.transform.position.x >= -7.0f)
+        if (this.transform.position.x >= 17.51f )
         {
-            
-            this.transform.position += movementAlongX;
+            Debug.Log("Player out of bounds");
+            this.transform.position = new Vector3(17.5f, 2.52f, 0);
+        }
+        else if (this.transform.position.x <= -17.51f)
+        {
+            Debug.Log("Player out of bounds");
+            this.transform.position = new Vector3(-17.5f, 2.52f, 0);
         }
         else
         {
-            Debug.Log("Player out of bounds");
+            this.transform.position += movementAlongX;
         }
 
     }
