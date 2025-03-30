@@ -9,6 +9,7 @@ TagManager:
   - redWall
   - ground
   - wall
+  - boundary
   layers:
   - Default
   - TransparentFX

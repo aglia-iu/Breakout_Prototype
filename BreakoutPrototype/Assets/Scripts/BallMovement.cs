@@ -19,19 +19,21 @@ public class BallMovement : MonoBehaviour
     private bool shieldHit = false;
     private bool wallHit = false;
     private bool groundHit = false;
+    private bool boundaryHit = false;
     private Transform shieldTransform;
     private Vector3 shieldTransformNormalized;
     private Transform wallTransform;
+    private Quaternion wallTransformRotation;
+    private Vector3 wallTransformNormalized;
     private float random;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         shieldTransform = shield.transform;
-        wallTransform = shield.transform;
         shieldHit = false;
         wallHit = true;
-        random = Random.value;
+        RandomizeColor();
     }
 
     // Update is called once per frame
@@ -48,18 +50,17 @@ public class BallMovement : MonoBehaviour
         {
             shieldTransform = other.transform;
             shieldTransformNormalized = shieldTransform.forward.normalized;
+            Debug.Log("Shield: " + shieldTransformNormalized);
             shieldHit = true;
             wallHit = false;
-
+            boundaryHit = false;
         }
 
         if (other.gameObject.tag == "wall" )
         {
-
-            wallTransform = other.transform;
-            shieldHit = false;
+            wallTransform = other.transform; 
             PlayerController player = shield.GetComponentInParent<PlayerController>();
-            wallHit = true;
+            
             //wallColor
             if(other.gameObject.GetComponent<MeshRenderer>().material.color == this.gameObject.GetComponent<MeshRenderer>().material.color)
             {
@@ -71,11 +72,22 @@ public class BallMovement : MonoBehaviour
                 player.SetScore(-1);
                 scoreText.text = "Score: " + player.GetScore().ToString();
             }
+            Reflection(other);
             RandomizeColor();
+
+            shieldHit = false;
+            wallHit = true;
+            boundaryHit = false;
         }
         if (other.gameObject.tag == "ground")
         {
             groundHit = true;
+            boundaryHit = false;
+        }
+        if (other.gameObject.tag == "boundary")
+        {
+            Reflection(other);
+            boundaryHit = true;
         }
 
     }
@@ -84,13 +96,20 @@ public class BallMovement : MonoBehaviour
     {
         Vector3 force = new Vector3(0, 0, ActivateForce());
         Vector3 linearDampingFactor = new Vector3(0, (LinearInterpolate(0.0f, time) * linearDamping), 0);
-        Debug.Log(force);
+        //Debug.Log(force);
 
         if (shieldHit && shieldTransform!=null)
         {
             force = ( shieldTransformNormalized * ActivateForce());
         }
-        
+        if (wallHit && wallTransform!=null)
+        {
+            force = (wallTransformNormalized * ActivateForce());
+        }
+        if (boundaryHit)
+        {
+            force = (wallTransformNormalized * ActivateForce());
+        }
         // If the ball hasn't hit the ground yet, let it fall down from the ground
         if (!groundHit) 
         {
@@ -112,6 +131,17 @@ public class BallMovement : MonoBehaviour
         }
     }
 
+    private void Reflection(Collider other)
+    {
+        wallTransformNormalized = Vector3.Reflect(shieldTransformNormalized, other.transform.forward) * -1.0f;
+        //float dotProduct = 2.0f * Vector3.Dot(shieldTransformNormalized, other.transform.forward);
+        //wallTransformNormalized = (-1.0f * new Vector3(
+        //    (dotProduct * shieldTransformNormalized.x) + other.transform.forward.x,
+        //    (dotProduct * shieldTransformNormalized.y) + other.transform.forward.y,
+        //    (dotProduct * shieldTransformNormalized.z) + other.transform.forward.z
+        //    )).normalized;
+
+    }
     private float ActivateForce()
     {
         if (shieldHit)
@@ -122,6 +152,8 @@ public class BallMovement : MonoBehaviour
         else if (wallHit)
         {
             return -1.0f * speed;
+            //return speed;
+
         }
         return 0;
     }

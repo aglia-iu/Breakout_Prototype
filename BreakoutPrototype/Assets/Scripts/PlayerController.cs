@@ -37,12 +37,20 @@ public class PlayerController : MonoBehaviour
         movementX = Input.GetAxis("Horizontal");
         //Debug.Log("input by user" +  movementX);
         Vector3 movementAlongX = new Vector3((movementX * speed)/2, 0, 0);
+        //Vector3 movementAlongX = new Vector3(LinearInterpolation(-17.0f, 17.0f, (movementX * speed)), 0, 0);
 
         // Add the provided force to the rigidBody
-        this.transform.position += movementAlongX;
         //Debug.Log("Final Movement" + movementAlongX);
+        while(this.transform.position.x <= 17.0f || this.transform.position.x >= -17.0f)
+        {
+            this.transform.position += movementAlongX;
 
+        }
 
+    }
+    private float LinearInterpolation(float start, float end, float val)
+    {
+        return ((end - start) * val) + start;
     }
 
     public int GetScore() 
