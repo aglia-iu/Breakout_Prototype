@@ -2,6 +2,10 @@ using UnityEngine;
 
 public class CustomPhysics : MonoBehaviour
 {
+    public Vector3 NormalizeTransform(Vector3 transform)
+    {
+        return transform.normalized;
+    }
     public float ActivateForce(float speed, bool hitOne, bool hitTwo, bool hitThree)
     {
         if (hitOne)

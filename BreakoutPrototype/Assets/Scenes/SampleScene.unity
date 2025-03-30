@@ -242,9 +242,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4392f3a3ee200144ae83e4fac5984b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 0.055
-  linearDamping: 0.07
-  bounceFactor: 0.03
+  speed: 0.4
+  linearDamping: 0.71
+  bounceFactor: 0.01
   shield: {fileID: 187482220}
   redMat: {fileID: 2100000, guid: 0f88acf7399c9454d888aa589ccb61fc, type: 2}
   yellowMat: {fileID: 2100000, guid: 38d3d7e58e62d96408df970fc1695372, type: 2}
@@ -2120,7 +2120,7 @@ Transform:
   m_GameObject: {fileID: 1616523408}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: -12.09, y: 5.7, z: 21.24}
+  m_LocalPosition: {x: -12.89, y: 5.7, z: 21.24}
   m_LocalScale: {x: 24.10467, y: 11.753206, z: 1.5599244}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2660,7 +2660,7 @@ Transform:
   m_GameObject: {fileID: 2002161163}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 12.06, y: 5.7, z: 21.24}
+  m_LocalPosition: {x: 11.71, y: 5.7, z: 21.24}
   m_LocalScale: {x: 24.10467, y: 11.753206, z: 1.5599244}
   m_ConstrainProportionsScale: 0
   m_Children: []
