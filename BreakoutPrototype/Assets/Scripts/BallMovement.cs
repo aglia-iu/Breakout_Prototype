@@ -25,11 +25,23 @@ public class BallMovement : MonoBehaviour
     private Transform wallTransform;
     private Quaternion wallTransformRotation;
     private Vector3 wallTransformNormalized;
+    private Vector3 boundaryTransformNormalized;
     private float random;
+    private PlayerController player;
+    private CustomPhysics customPhysics;
+    private Vector3 startPos;
+    private Quaternion startRot;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        player = shield.GetComponentInParent<PlayerController>();
+        customPhysics = gameObject.GetComponent<CustomPhysics>();
+
+        startPos = this.transform.position;
+        startRot = this.transform.rotation;
+
         shieldTransform = shield.transform;
         shieldHit = false;
         wallHit = true;
@@ -40,7 +52,6 @@ public class BallMovement : MonoBehaviour
     void Update()
     {
         //Debug.Log("Hit the ground: " + groundHit + ", Hit the shield: " + shieldHit + ", Hit the Wall: " + wallHit);
-        
         BouncePhysics(7.0f);
     }
 
@@ -50,7 +61,7 @@ public class BallMovement : MonoBehaviour
         {
             shieldTransform = other.transform;
             shieldTransformNormalized = shieldTransform.forward.normalized;
-            Debug.Log("Shield: " + shieldTransformNormalized);
+            //Debug.Log("Shield: " + shieldTransformNormalized);
             shieldHit = true;
             wallHit = false;
             boundaryHit = false;
@@ -58,21 +69,19 @@ public class BallMovement : MonoBehaviour
 
         if (other.gameObject.tag == "wall" )
         {
-            wallTransform = other.transform; 
-            PlayerController player = shield.GetComponentInParent<PlayerController>();
-            
-            //wallColor
-            if(other.gameObject.GetComponent<MeshRenderer>().material.color == this.gameObject.GetComponent<MeshRenderer>().material.color)
+            wallTransform = other.transform;
+            Color wallColor = other.gameObject.GetComponent<MeshRenderer>().material.color;
+            Color ballColor = this.gameObject.GetComponent<MeshRenderer>().material.color;
+
+            if (wallColor == ballColor)
             {
                 player.SetScore(1);
-                scoreText.text = "Score: " + player.GetScore().ToString();
             }
-            else if(other.gameObject.GetComponent<MeshRenderer>().material.color != this.gameObject.GetComponent<MeshRenderer>().material.color)
+            else if(wallColor != ballColor)
             {
                 player.SetScore(-1);
-                scoreText.text = "Score: " + player.GetScore().ToString();
             }
-            Reflection(other);
+            Reflection(shieldTransformNormalized,other);
             RandomizeColor();
 
             shieldHit = false;
@@ -81,12 +90,16 @@ public class BallMovement : MonoBehaviour
         }
         if (other.gameObject.tag == "ground")
         {
+            //shieldHit = false;
             groundHit = true;
             boundaryHit = false;
         }
         if (other.gameObject.tag == "boundary")
         {
-            Reflection(other);
+            Reflection(wallTransformNormalized,other);
+            //shieldHit = false;
+            //groundHit = false;
+            //wallHit = false;
             boundaryHit = true;
         }
 
@@ -95,7 +108,7 @@ public class BallMovement : MonoBehaviour
     private void BouncePhysics(float time)
     {
         Vector3 force = new Vector3(0, 0, ActivateForce());
-        Vector3 linearDampingFactor = new Vector3(0, (LinearInterpolate(0.0f, time) * linearDamping), 0);
+        Vector3 linearDampingFactor = new Vector3(0, (customPhysics.LinearInterpolation(0.0f, bounceFactor, time) * linearDamping), 0);
         //Debug.Log(force);
 
         if (shieldHit && shieldTransform!=null)
@@ -108,7 +121,7 @@ public class BallMovement : MonoBehaviour
         }
         if (boundaryHit)
         {
-            force = (wallTransformNormalized * ActivateForce());
+            force = (wallTransformNormalized* -1.0f * ActivateForce());
         }
         // If the ball hasn't hit the ground yet, let it fall down from the ground
         if (!groundHit) 
@@ -131,16 +144,9 @@ public class BallMovement : MonoBehaviour
         }
     }
 
-    private void Reflection(Collider other)
+    private void Reflection(Vector3 transformNormalized, Collider other)
     {
-        wallTransformNormalized = Vector3.Reflect(shieldTransformNormalized, other.transform.forward) * -1.0f;
-        //float dotProduct = 2.0f * Vector3.Dot(shieldTransformNormalized, other.transform.forward);
-        //wallTransformNormalized = (-1.0f * new Vector3(
-        //    (dotProduct * shieldTransformNormalized.x) + other.transform.forward.x,
-        //    (dotProduct * shieldTransformNormalized.y) + other.transform.forward.y,
-        //    (dotProduct * shieldTransformNormalized.z) + other.transform.forward.z
-        //    )).normalized;
-
+        wallTransformNormalized = Vector3.Reflect(transformNormalized, other.transform.forward) * -1.0f;
     }
     private float ActivateForce()
     {
@@ -158,10 +164,6 @@ public class BallMovement : MonoBehaviour
         return 0;
     }
 
-    private float LinearInterpolate(float startValue, float time)
-    {
-        return startValue + (bounceFactor - startValue) * time;
-    }
     
     private void RandomizeColor()
     {
@@ -176,6 +178,16 @@ public class BallMovement : MonoBehaviour
             this.gameObject.GetComponent<MeshRenderer>().material = yellowMat;
 
         }
+    }
+
+    public void Restart()
+    {
+        this.transform.position = startPos;
+        this.transform.rotation = startRot;
+        shieldTransform = shield.transform;
+
+        shieldHit = false;
+        wallHit = true;
     }
 
     

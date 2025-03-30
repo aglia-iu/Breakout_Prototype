@@ -29,30 +29,25 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         MovementPlayer();
-
     }
 
     public void MovementPlayer()
     {
         movementX = Input.GetAxis("Horizontal");
-        //Debug.Log("input by user" +  movementX);
         Vector3 movementAlongX = new Vector3((movementX * speed)/2, 0, 0);
-        //Vector3 movementAlongX = new Vector3(LinearInterpolation(-17.0f, 17.0f, (movementX * speed)), 0, 0);
 
-        // Add the provided force to the rigidBody
-        //Debug.Log("Final Movement" + movementAlongX);
-        while(this.transform.position.x <= 17.0f || this.transform.position.x >= -17.0f)
+        if(this.transform.position.x <= 7.0f || this.transform.position.x >= -7.0f)
         {
+            
             this.transform.position += movementAlongX;
-
+        }
+        else
+        {
+            Debug.Log("Player out of bounds");
         }
 
     }
-    private float LinearInterpolation(float start, float end, float val)
-    {
-        return ((end - start) * val) + start;
-    }
-
+    
     public int GetScore() 
     { 
         return score;
@@ -61,6 +56,12 @@ public class PlayerController : MonoBehaviour
     public void SetScore(int increment)
     {
         score += increment;
+    }
+
+    public void Restart()
+    {
+        this.transform.position = playerStartPos;
+        this.transform.rotation = playerStartRot;
     }
 
 
