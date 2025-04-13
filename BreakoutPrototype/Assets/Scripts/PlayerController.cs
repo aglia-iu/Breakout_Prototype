@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 /*
  * This class is responsible for the control and the movement of the playable character. This character will move exclusively along the x-axis
@@ -82,6 +83,10 @@ public class PlayerController : MonoBehaviour
     {
         score += increment;
     }
+  
+    private int score2 = 0;
+
+    public int Score2 { get { return score2; } set {score2++; } }
 
     /*
      * This is the Restart() function, is a private function used to Restart the player's score.

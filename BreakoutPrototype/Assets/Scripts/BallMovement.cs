@@ -36,8 +36,8 @@ public class BallMovement : MonoBehaviour
     private Vector3 curTransformNormalized; // The normalized vector of the current transform. When multiplied with the speed, it gives the character force. 
     private Vector3 prevTransformNormalized; // The normalized vector of the previous transform, which can be used to reflect a ball off of a surface.
     private float random; // The random seed to change the colors of the ball. 
-    private Vector3 startPos; // The starting position of the ball.
-    private Quaternion startRot;// The starting rotation of the ball.
+    private Vector3 startPos = Vector3.zero; // The starting position of the ball.
+    private Quaternion? startRot = null;// The starting rotation of the ball.
 
     private PlayerController player; // The PlayerController component that stores the score of the user. 
     private CustomPhysics customPhysics; // The custom physics object used to manipulate the ball in program space.
@@ -48,13 +48,14 @@ public class BallMovement : MonoBehaviour
         // Obtaining the scripts attached to GameObjects in the scene, including the ball itself.
         player = shield.GetComponentInParent<PlayerController>();
         customPhysics = this.gameObject.GetComponent<CustomPhysics>();
+        player.Score2 = 5;
 
         // Obtaining the starting poition and rotation.
         startPos = this.transform.position;
         startRot = this.transform.rotation;
 
         // Setting the current normalized transform so that the ball travels straight, as well as the color of the ball.
-        curTransformNormalized = new Vector3(0.0f, 0.0f, 1.0f);
+        curTransformNormalized = new Vector3(0.0f, 0.0f, -1.0f);
         RandomizeColor();
     }
 
@@ -134,13 +135,13 @@ public class BallMovement : MonoBehaviour
         if (other.gameObject.tag == "ground")
         {
             // Get the ground's transform
-            curTransform = other.transform;
+            //curTransform = other.transform;
 
             // Set only groundHit to true
             groundHit = true;
 
             // Record the ground's normalized transform to reference later.
-            prevTransformNormalized = curTransformNormalized;
+            //prevTransformNormalized = curTransformNormalized;
         }
         //  If the ball hits the boundary
         if (other.gameObject.tag == "boundary")
@@ -177,19 +178,20 @@ public class BallMovement : MonoBehaviour
                                                                                                                     // ball is propelled forwards. 
         Vector3 bounceVal = new Vector3( // The factor by which the object bounces up and down.
             0, 
-            (customPhysics.LinearInterpolation(0.0f, customPhysics.bounceFactor, time) * (customPhysics.linearDamping)), 
+            (customPhysics.LinearInterpolation(0.0f, customPhysics.bounceFactor, time) * (customPhysics.linearDamping)) * customPhysics.GravityCalculation(), 
             0
             );
 
-        force = (curTransformNormalized * customPhysics.ActivateForce(shieldHit, wallHit, boundaryHit, groundHit)); // The normalized transform is
-                                                                                                                    // dictated by the
-                                                                                                                    // curTransformNormalized (set
-                                                                                                                    // in the OnTriggerEnter()
-                                                                                                                    // function on this script.)
-        
+        force = (curTransformNormalized 
+            * customPhysics.ActivateForce(shieldHit, wallHit, boundaryHit, groundHit))
+            //* customPhysics.GravityCalculation()
+            ; // The normalized transform is dictated by the curTransformNormalized (set in the OnTriggerEnter() function on this script.)
+        //Debug.Log("On Bounce Movement Start: " + curTransformNormalized);
+
         // If the ball hasn't hit the ground yet, let it fall down from the ground
         if (!groundHit) 
         {
+            //Debug.Log("Before Ground Hit: " + curTransformNormalized);
             this.transform.position += (bounceVal) * -0.5f ; // The negative value indicates a downwards movement
             this.transform.position += force;
         }
@@ -206,6 +208,8 @@ public class BallMovement : MonoBehaviour
             {
                 groundHit = !groundHit;
             }
+            //Debug.Log("After Ground hit: " + curTransformNormalized);
+
         }
     }
 
@@ -234,11 +238,22 @@ public class BallMovement : MonoBehaviour
     public void Restart()
     {
         // Setting the position and rotation of the ball
-        this.transform.position = startPos; 
-        this.transform.rotation = startRot;
+
+        if (startPos != Vector3.zero && startRot != null)
+        {
+            Debug.Log(startPos);
+            this.transform.position = startPos;
+            this.transform.rotation = startRot.Value;
+        }
+        else
+        {
+            this.transform.position = new Vector3(1.18f, 4.97f, 11.61f);
+            this.transform.rotation = new Quaternion();
+        }
+
 
         // Setting the original normalized transform of the ball
-        curTransformNormalized = new Vector3(0.0f, 0.0f, 1.0f);
+        curTransformNormalized = new Vector3(0.0f, 0.0f, -1.0f);
 
         // Resetting the collision variables.
         shieldHit = false;

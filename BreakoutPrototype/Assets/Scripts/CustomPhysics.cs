@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 /*
  * This class controls the movement of the ball with respect to the colliders that it interacts with. 
@@ -47,7 +48,7 @@ public class CustomPhysics : MonoBehaviour
         {
             return speed;
         }
-        return -1.0f * speed;
+        return speed;
     }
     /*
      * This function linearly interpolates between two objects from a starting to an ending point based on a set amount of time (also known as 
@@ -79,5 +80,11 @@ public class CustomPhysics : MonoBehaviour
         return Vector3.Reflect(transformNormalized, other.transform.forward);
          
         
+    }
+
+    public float GravityCalculation()
+    {
+        //The calculation of gravity is F = m*g, where 'g' is a constant representing gravitational force (usually 9.8 m/s), and the mass of the object (in this case 1.0f)
+        return bounceFactor/(2.0f* Time.deltaTime * Time.deltaTime);
     }
 }
